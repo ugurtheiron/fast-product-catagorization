@@ -1,0 +1,38 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual-env / pipenv
+.env/
+.venv/
+*.egg-info/
+pip-wheel-metadata/
+
+# Jupyter / IPython
+.ipynb_checkpoints/
+
+# dotenv secrets
+.env
+
+# Build / dist
+build/
+dist/
+*.egg
+*.whl
+
+# VS Code / PyCharm
+.vscode/
+.idea/
+
+# OS / misc
+.DS_Store
+Thumbs.db
+
+# Merlin cache
+category_embeddings.pkl
+
+#custom
+memo.txt
