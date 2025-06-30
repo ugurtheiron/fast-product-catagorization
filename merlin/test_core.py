@@ -1,9 +1,10 @@
-# examples/quickstart.py
-from merlin.core import CategoryClassifier
+from core import CategoryClassifier
 import json
 
 # Initialize the classifier with the category list file
-classifier = CategoryClassifier(category_file="Sporday_Kategori_Tüm_Sporlar.xlsx")
+classifier = CategoryClassifier(category_file="C:\\workspaces\\fast-product-catagorization\\Sporday_Kategori_Tüm_Sporlar.xlsx", 
+                                threshold_full = 0.6,
+                                threshold_partial = 0.5)
 
 # Single product classification example
 product_name = "Camo Hunting Shirt"
