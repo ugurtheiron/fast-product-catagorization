@@ -122,64 +122,41 @@ def get_top_k_paths(
 def pick_best_category(
     product_text: str,
     candidates: List[str],
-    temperature: float = 0.2,
-    model: str = "gpt-4o-mini",
+    dims: int = 256,
 ) -> Optional[str]:
-    """Ask GPT to pick the best category from the candidates."""
+    """Return the single best candidate purely via embedding similarity."""
 
-    # Build the function-call schema for a deterministic response
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    function = {
-        "name": "pick_category",
-        "parameters": {
-            "type": "object",
-            "properties": {"path": {"type": "string"}},
-            "required": ["path"],
-        },
-    }
-    user_list = "\n".join(f"- {c}" for c in candidates)
-    messages = [
-        {
-            "role": "system",
-            "content": (
-                "You are a category picker. Return exactly one full path from the list or 'NONE'."
-            ),
-        },
-        {
-            "role": "user",
-            "content": f"Product: {product_text}\n\nCandidates:\n{user_list}",
-        },
-    ]
-    resp = client.chat.completions.create(
-        model=model,
-        messages=messages,
-        temperature=temperature,
-        functions=[function],
-        function_call={"name": "pick_category"},
-    )
-    message = resp.choices[0].message
-    path: str
-    # Parse the function-call result or fall back to raw content
-    if message.function_call:
-        args = json.loads(message.function_call.arguments or "{}")
-        path = args.get("path", "").strip()
-    else:
-        path = (message.content or "").strip()
-    if path.upper() == "NONE" or not path:
+    if not candidates:
         return None
-    return path
+
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    # Preprocess and embed product plus candidate paths in one batch
+    inputs = [preprocess_text(product_text)] + [preprocess_text(c) for c in candidates]
+    resp = client.embeddings.create(
+        model="text-embedding-3-large",
+        input=inputs,
+        dimensions=dims,
+    )
+
+    vecs = np.array([d.embedding for d in resp.data], dtype="float32")
+    faiss.normalize_L2(vecs)
+    query_vec = vecs[0]
+    cand_vecs = vecs[1:]
+    sims = cand_vecs @ query_vec
+    best_idx = int(np.argmax(sims))
+    return candidates[best_idx]
 
 
 def categorize_product(
     title: str,
     description: Optional[str],
     k: int = 15,
+    dims: int = 256,
 ) -> Optional[str]:
-    """High-level helper that finds candidates then asks GPT to pick one."""
-    # Prepare text for GPT, then chain the k-NN lookup with the picker
+    """High-level helper that finds candidates then selects the best one."""
     product_text = f"{title}. {description or ''}".strip()
-    candidates = get_top_k_paths(title, description, k=k)
-    return pick_best_category(product_text, candidates)
+    candidates = get_top_k_paths(title, description, k=k, dims=dims)
+    return pick_best_category(product_text, candidates, dims=dims)
 
 
 def guess_category(

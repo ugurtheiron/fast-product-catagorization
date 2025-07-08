@@ -1,9 +1,10 @@
 # Merlin Product Categorization
 
-Merlin maps e-commerce product titles to a three-level category tree. It uses a two step approach:
-
-1. **Nearest-neighbour search** – Each category path is embedded once and stored in a FAISS index. A product title (optionally combined with its description) is embedded the same way and the closest category paths are retrieved.
-2. **GPT selection** – The shortlist is presented to GPT which picks the final category. This keeps the number of model calls low while still leveraging GPT's reasoning ability.
+Merlin maps e-commerce product titles to a three-level category tree using embeddings.
+Each category path is embedded once and stored in a FAISS index. A product title
+(optionally combined with its description) is embedded the same way and the
+closest category paths are retrieved. The best match is then chosen by comparing
+embeddings directly.
 
 ## Features
 - Reusable FAISS index for category embeddings

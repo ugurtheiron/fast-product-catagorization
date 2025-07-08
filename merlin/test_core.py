@@ -83,38 +83,24 @@ def test_new_pipeline(monkeypatch, tmp_path):
         json.dump(["A", "B", "C"], f)
 
     # ------------------------------------------------------------------
-    # Fake OpenAI client returning deterministic embeddings and choices
+    # Fake OpenAI client returning deterministic embeddings
     # ------------------------------------------------------------------
     class FakeEmbeddings:
-        def create(self, **kwargs):
-            return type(
-                "Resp",
-                (),
-                {
-                    "data": [
-                        type("D", (), {"embedding": [0.0, 1.0, 0.0]})()
-                    ]
-                },
-            )
-
-    class FakeChatCompletions:
-        def create(self, **kwargs):
-            msg = type(
-                "Msg",
-                (),
-                {
-                    "function_call": type(
-                        "FC", (), {"arguments": json.dumps({"path": "B"})}
-                    )(),
-                    "content": None,
-                },
-            )
-            return type("Resp", (), {"choices": [type("Choice", (), {"message": msg})()]})
+        def create(self, *, input, **kwargs):
+            data = []
+            for text in input:
+                if text == "A":
+                    vec = [1.0, 0.0, 0.0]
+                elif text == "B" or text == "something":
+                    vec = [0.0, 1.0, 0.0]
+                else:
+                    vec = [0.0, 0.0, 1.0]
+                data.append(type("D", (), {"embedding": vec})())
+            return type("Resp", (), {"data": data})
 
     class FakeClient:
         def __init__(self, *_, **__):
             self.embeddings = FakeEmbeddings()
-            self.chat = type("Chat", (), {"completions": FakeChatCompletions()})()
 
     monkeypatch.setattr("merlin.categorizer.OpenAI", FakeClient)
 
