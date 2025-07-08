@@ -1,10 +1,10 @@
 # Merlin Product Categorization
 
-Ever struggled with categorizing thousands of products? Merlin helps you automatically map product titles to a three-level category tree using AI. I built this because manually categorizing products is painfully slow, and I needed something that could handle both speed and accuracy depending on the situation.
+Merlin helps automatically map product titles to a three-level category tree using AI. I built this because manually categorizing products is painfully slow, and I needed something that could handle both speed and accuracy depending on the situation.
 
 ## How it works
 
-There are two ways to categorize products, and honestly, which one you choose depends on what you need:
+There are two ways to categorize products, which one you choose depends on what you need:
 
 ### The Fast Way (Single Similarity)
 This is my go-to for bulk processing. Here's what happens:
@@ -13,7 +13,7 @@ This is my go-to for bulk processing. Here's what happens:
 - Then it's just math - find the category with the highest cosine similarity
 - Based on confidence thresholds, you get either the full category path, a partial match, or "nope, doesn't fit"
 
-Why I like this approach:
+this approach:
 - Lightning fast once set up
 - No extra API calls = lower costs
 - Predictable results every time
@@ -49,7 +49,7 @@ pip install -e .
 echo 'OPENAI_API_KEY="sk-your-key-here"' > .env
 
 # Try it out with the example
-python example/quickstart.py
+python merlin/test_categorizers.py
 ```
 
 Use the helpers directly from Python:
@@ -70,9 +70,3 @@ ensure_category_index(categories)
 result = categorize_product("Camo Hunting Shirt", None)
 print(result)
 ```
-
-## Pro tips
-- Start with the fast method for testing, then switch to accurate if you need better results
-- The embedding cache saves you tons of time on subsequent runs
-- If you're processing millions of products, definitely go with the single similarity approach
-- For complex or ambiguous products, the GPT method is worth the extra cost
