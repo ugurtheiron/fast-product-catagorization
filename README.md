@@ -22,3 +22,14 @@ echo 'OPENAI_API_KEY="sk-..."' > .env
 # Run the example
 python example/quickstart.py
 ```
+
+Use the helpers directly from Python:
+
+```python
+from merlin import load_category_file, ensure_category_index, guess_category
+
+categories = load_category_file("Sporday_Kategori_Tüm_Sporlar.xlsx")
+ensure_category_index(categories)
+guess = guess_category("Camo Hunting Shirt", None)
+print(guess)
+```

@@ -10,6 +10,7 @@ from merlin.categorizer import (
     ensure_category_index,
     get_top_k_paths,
     pick_best_category,
+    guess_category,
 )
 import numpy as np
 import pytest
@@ -127,3 +128,7 @@ def test_new_pipeline(monkeypatch, tmp_path):
 
     best = pick_best_category("something", paths)
     assert best == "B"
+
+    # Convenience single guess helper
+    guess = guess_category("something", None, dims=dims, index_path=str(index_path))
+    assert guess == "B"

@@ -11,6 +11,8 @@ from typing import List, Optional
 import numpy as np
 from openai import OpenAI
 
+from .utils import load_categories, preprocess_text
+
 try:
     import faiss  # type: ignore
 except ImportError:  # pragma: no cover - optional dependency
@@ -22,6 +24,12 @@ class Category:
     """Simple category node with a full path string."""
 
     path: str
+
+
+def load_category_file(file_path: str) -> List[Category]:
+    """Return Category objects loaded from an Excel file."""
+    paths = load_categories(file_path)
+    return [Category(path=p) for p in paths]
 
 
 def _require_faiss() -> None:
@@ -91,8 +99,9 @@ def get_top_k_paths(
     _require_faiss()
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-    # Combine title and optional description into the search text
+    # Combine title and optional description then preprocess the text
     query = f"{title}. {description or ''}".strip()
+    query = preprocess_text(query)
     resp = client.embeddings.create(
         model="text-embedding-3-large",
         input=[query],
@@ -171,3 +180,16 @@ def categorize_product(
     product_text = f"{title}. {description or ''}".strip()
     candidates = get_top_k_paths(title, description, k=k)
     return pick_best_category(product_text, candidates)
+
+
+def guess_category(
+    title: str,
+    description: Optional[str],
+    dims: int = 256,
+    index_path: str = "cache/cat.faiss",
+) -> str:
+    """Return the single best category path using k-NN only."""
+
+    return get_top_k_paths(
+        title, description, k=1, dims=dims, index_path=index_path
+    )[0]
