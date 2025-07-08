@@ -37,3 +37,6 @@ category_embeddings.pkl
 #custom
 memo.txt
 Sporday_Kategori_Tüm_Sporlar.xlsx
+
+# FAISS index
+cache/
