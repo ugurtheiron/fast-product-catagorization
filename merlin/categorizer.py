@@ -122,29 +122,50 @@ def get_top_k_paths(
 def pick_best_category(
     product_text: str,
     candidates: List[str],
-    dims: int = 256,
+    *,
+    temperature: float = 0.2,
+    model: str = "gpt-4o-mini",
 ) -> Optional[str]:
-    """Return the single best candidate purely via embedding similarity."""
+    """Return the single best category using a GPT function call."""
 
     if not candidates:
         return None
 
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    # Preprocess and embed product plus candidate paths in one batch
-    inputs = [preprocess_text(product_text)] + [preprocess_text(c) for c in candidates]
-    resp = client.embeddings.create(
-        model="text-embedding-3-large",
-        input=inputs,
-        dimensions=dims,
+
+    system = "You are a category picker. Return exactly one full path from the list or 'NONE'."
+    bullet_list = "\n".join(f"- {c}" for c in candidates)
+    user = f"Product: {product_text}\n\nCandidates:\n{bullet_list}"
+
+    tools = [
+        {
+            "type": "function",
+            "function": {
+                "name": "pick_category",
+                "parameters": {
+                    "type": "object",
+                    "properties": {"path": {"type": "string"}},
+                    "required": ["path"],
+                },
+            },
+        }
+    ]
+
+    resp = client.chat.completions.create(
+        model=model,
+        temperature=temperature,
+        messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
+        tools=tools,
+        tool_choice={"type": "function", "function": {"name": "pick_category"}},
     )
 
-    vecs = np.array([d.embedding for d in resp.data], dtype="float32")
-    faiss.normalize_L2(vecs)
-    query_vec = vecs[0]
-    cand_vecs = vecs[1:]
-    sims = cand_vecs @ query_vec
-    best_idx = int(np.argmax(sims))
-    return candidates[best_idx]
+    args = json.loads(
+        resp.choices[0].message.tool_calls[0].function.arguments
+    )
+    path = args["path"].strip()
+    if path.upper() == "NONE":
+        return None
+    return path
 
 
 def categorize_product(
@@ -156,7 +177,7 @@ def categorize_product(
     """High-level helper that finds candidates then selects the best one."""
     product_text = f"{title}. {description or ''}".strip()
     candidates = get_top_k_paths(title, description, k=k, dims=dims)
-    return pick_best_category(product_text, candidates, dims=dims)
+    return pick_best_category(product_text, candidates)
 
 
 def guess_category(

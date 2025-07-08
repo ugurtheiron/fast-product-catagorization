@@ -1,10 +1,10 @@
 # Merlin Product Categorization
 
-Merlin maps e-commerce product titles to a three-level category tree using embeddings.
-Each category path is embedded once and stored in a FAISS index. A product title
-(optionally combined with its description) is embedded the same way and the
-closest category paths are retrieved. The best match is then chosen by comparing
-embeddings directly.
+Merlin maps e-commerce product titles to a three-level category tree using a
+combination of vector search and a lightweight GPT prompt. Each category path is
+embedded once and stored in a FAISS index. When classifying a product, the
+nearest category paths are looked up and the final choice is made by GPT from
+that short list.
 
 ## Features
 - Reusable FAISS index for category embeddings
@@ -27,10 +27,10 @@ python example/quickstart.py
 Use the helpers directly from Python:
 
 ```python
-from merlin import load_category_file, ensure_category_index, guess_category
+from merlin import load_category_file, ensure_category_index, categorize_product
 
 categories = load_category_file("Sporday_Kategori_Tüm_Sporlar.xlsx")
 ensure_category_index(categories)
-guess = guess_category("Camo Hunting Shirt", None)
-print(guess)
+result = categorize_product("Camo Hunting Shirt", None)
+print(result)
 ```

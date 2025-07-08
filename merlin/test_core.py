@@ -83,7 +83,7 @@ def test_new_pipeline(monkeypatch, tmp_path):
         json.dump(["A", "B", "C"], f)
 
     # ------------------------------------------------------------------
-    # Fake OpenAI client returning deterministic embeddings
+    # Fake OpenAI client returning deterministic embeddings and chat output
     # ------------------------------------------------------------------
     class FakeEmbeddings:
         def create(self, *, input, **kwargs):
@@ -98,9 +98,27 @@ def test_new_pipeline(monkeypatch, tmp_path):
                 data.append(type("D", (), {"embedding": vec})())
             return type("Resp", (), {"data": data})
 
+    class FakeChatCompletions:
+        def create(self, *, messages, **kwargs):
+            content = messages[-1]["content"]
+            if "B" in content:
+                chosen = "B"
+            else:
+                chosen = "NONE"
+            args = json.dumps({"path": chosen})
+            tool_call = type("TC", (), {"function": type("F", (), {"arguments": args})()})()
+            message = type("M", (), {"tool_calls": [tool_call]})()
+            choice = type("C", (), {"message": message})()
+            return type("R", (), {"choices": [choice]})
+
+    class FakeChat:
+        def __init__(self):
+            self.completions = FakeChatCompletions()
+
     class FakeClient:
         def __init__(self, *_, **__):
             self.embeddings = FakeEmbeddings()
+            self.chat = FakeChat()
 
     monkeypatch.setattr("merlin.categorizer.OpenAI", FakeClient)
 
@@ -118,3 +136,7 @@ def test_new_pipeline(monkeypatch, tmp_path):
     # Convenience single guess helper
     guess = guess_category("something", None, dims=dims, index_path=str(index_path))
     assert guess == "B"
+
+    # Full categorization helper
+    final = categorize_product("something", None, k=2, dims=dims)
+    assert final == "B"
