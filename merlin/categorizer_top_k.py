@@ -11,7 +11,7 @@ from typing import List, Optional
 import numpy as np
 from openai import OpenAI
 
-from .utils import load_categories, preprocess_text
+from utils import load_categories, preprocess_text
 
 try:
     import faiss  # type: ignore

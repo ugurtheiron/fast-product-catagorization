@@ -1,6 +1,6 @@
 """Merlin e-commerce categorization helpers."""
 
-from .categorizer import (
+from .categorizer_top_k import (
     Category,
     load_category_file,
     ensure_category_index,
