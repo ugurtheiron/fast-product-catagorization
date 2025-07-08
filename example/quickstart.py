@@ -1,5 +1,5 @@
 # examples/quickstart.py
-from merlin.core import CategoryClassifier
+from merlin.categorizer_single import CategoryClassifier
 import json
 
 # Initialize the classifier with the category list file
