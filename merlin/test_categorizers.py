@@ -42,7 +42,7 @@ def categorizer_single_test() -> None:
     for name, res in zip(product_list, batch_results):
         print(f"\nProduct Name: {name}")
         print("Result:", res)
-categorizer_single_test()
+# categorizer_single_test()
 
 
 def categorizer_single_top_k_test():
@@ -50,15 +50,17 @@ def categorizer_single_top_k_test():
     
     categories = load_category_file("C:\\workspaces\\fast-product-catagorization\\Sporday_Kategori_Tüm_Sporlar.xlsx")
     ensure_category_index(categories)
-    title = "Camo Hunting Shirt"
+    product_list = ["Nike Air Zoom Running Shoes Men's", "Kids Basketball Shorts", "Unknown Product XYZ"]
     description = None
-    paths = get_top_k_paths(title, description, k=10)
-    best = pick_best_category(f"{title}.", paths)
-    print("Candidates:")
-    for path in paths:
-        print("-", path)
-    print("Best:", best)
-    # Or use the convenience wrapper
-    final_path = categorize_product(title, description, k=10)
-    print("Categorize product result:", final_path)
-# categorizer_single_top_k_test()
+    for title in product_list:
+        paths = get_top_k_paths(title, description, k=10)
+        best = pick_best_category(f"{title}.", paths)
+        print("Candidates:")
+        for path in paths:
+            print("-", path)
+        print("Title:", title)
+        print("Best:", best)
+        # Or use the convenience wrapper
+        # final_path = categorize_product(title, description, k=10)
+        # print("Categorize product result:", final_path)
+categorizer_single_top_k_test()
