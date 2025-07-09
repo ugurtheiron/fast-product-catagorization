@@ -2,12 +2,23 @@
 
 Merlin helps automatically map product titles to a three-level category tree using AI. I built this because manually categorizing products is painfully slow, and I needed something that could handle both speed and accuracy depending on the situation.
 
+- [Merlin Product Categorization](#merlin-product-categorization)
+  - [How it works](#how-it-works)
+    - [Single Similarity (The Fast Way)](#single-similarity-the-fast-way)
+    - [Top-K + GPT (The Accurate Way)](#top-k--gpt-the-accurate-way)
+  - [What's included](#whats-included)
+  - [Getting started](#getting-started)
+
+
 ## How it works
 
 There are two ways to categorize products, which one you choose depends on what you need:
 
-### The Fast Way (Single Similarity)
+### Single Similarity (The Fast Way)
 This is my go-to for bulk processing. Here's what happens:
+
+![Cosine Similarity](./drawio/Cosine.png)
+
 - First, we create embeddings for all your categories (this happens once and gets cached)
 - When you throw a product name at it, we embed that too
 - Then it's just math - find the category with the highest cosine similarity
@@ -19,8 +30,11 @@ this approach:
 - Predictable results every time
 - Perfect when you need to process thousands of products
 
-### The Accurate Way (Top-K + GPT)
+### Top-K + GPT (The Accurate Way)
 When accuracy matters more than speed, this is the way to go:
+
+![Cosine Similarity](./drawio/knn+gpt.png)
+
 - Same embedding setup, but we store everything in a FAISS index for faster searching
 - For each product, we find the 15 most similar categories using vector search
 - Here's the magic: we send those 15 candidates along with the product to GPT and let it decide
@@ -42,6 +56,10 @@ This works better because:
 
 ## Getting started
 ```bash
+# (Recommended) Create and activate a virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
+
 # Install the thing
 pip install -e .
 
