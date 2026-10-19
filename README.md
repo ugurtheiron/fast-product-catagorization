@@ -88,3 +88,7 @@ ensure_category_index(categories)
 result = categorize_product("Camo Hunting Shirt", None)
 print(result)
 ```
+
+## License
+
+Released under the MIT License — see [LICENSE](LICENSE).
