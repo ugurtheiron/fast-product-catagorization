@@ -40,3 +40,7 @@ Sporday_Kategori_Tüm_Sporlar.xlsx
 
 # FAISS index
 cache/
+
+# Virtual-env (no dot) and test cache
+venv/
+.pytest_cache/
