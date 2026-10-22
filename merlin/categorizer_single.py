@@ -3,7 +3,7 @@ import numpy as np
 import pickle
 import os
 from dotenv import load_dotenv
-from utils import load_categories, preprocess_text
+from .utils import load_categories, preprocess_text
 
 class CategoryClassifier:
     def __init__(self, category_file: str, embedding_model: str = "text-embedding-3-large",

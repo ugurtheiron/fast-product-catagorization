@@ -60,14 +60,16 @@ This works better because:
 python -m venv .venv
 source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
 
-# Install the thing
-pip install -e .
+# Install the thing (+ dev tools). The Top-K + GPT method also needs FAISS:
+# pip install -e ".[dev,faiss]"
+pip install -e ".[dev]"
 
 # Add your OpenAI key (you know the drill)
 echo 'OPENAI_API_KEY="sk-your-key-here"' > .env
 
-# Try it out with the example
-python merlin/test_categorizers.py
+# Lint and run the offline test suite (no API key or network needed)
+ruff check .
+pytest
 ```
 
 Use the helpers directly from Python:

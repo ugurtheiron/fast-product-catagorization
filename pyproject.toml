@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "merlin"
+version = "0.1.0"
+description = "Map product titles to a 3-level category tree using OpenAI embeddings."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Uğur Özdemir" }]
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "openai>=1.93,<2",
+    "pandas",
+    "numpy",
+    "python-dotenv",
+    "openpyxl",
+]
+
+[project.optional-dependencies]
+faiss = ["faiss-cpu>=1.9"]
+dev = ["pytest", "ruff"]
+
+[project.urls]
+Homepage = "https://github.com/ugurtheiron/fast-product-catagorization"
+
+[tool.setuptools.packages.find]
+include = ["merlin*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
