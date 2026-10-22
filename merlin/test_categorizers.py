@@ -5,22 +5,16 @@ from __future__ import annotations
 import json
 
 from categorizer_top_k import (
-    Category,
-    categorize_product,
     load_category_file,
     ensure_category_index,
     get_top_k_paths,
     pick_best_category,
-    guess_category,
 )
-import numpy as np
-import pytest
 
 
 
 def categorizer_single_test() -> None:
     from categorizer_single import CategoryClassifier
-    import json
 
     # Initialize the classifier with the category list file
     classifier = CategoryClassifier(category_file="C:\\workspaces\\fast-product-catagorization\\Sporday_Kategori_Tüm_Sporlar.xlsx", 
