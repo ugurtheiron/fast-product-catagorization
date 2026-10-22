@@ -1,5 +1,6 @@
 """Merlin e-commerce categorization helpers."""
 
+from .categorizer_single import CategoryClassifier
 from .categorizer_top_k import (
     Category,
     load_category_file,
@@ -11,6 +12,7 @@ from .categorizer_top_k import (
 )
 
 __all__ = [
+    "CategoryClassifier",
     "Category",
     "load_category_file",
     "ensure_category_index",
