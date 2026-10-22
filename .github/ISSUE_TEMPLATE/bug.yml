@@ -1,0 +1,54 @@
+name: Bug report
+description: Something does not work as documented
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Please do not paste your OpenAI API key or the contents of your `.env` file.
+        Security problems should be reported privately, see SECURITY.md.
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear description of the problem and what you expected to happen instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: A minimal snippet or the exact steps. Include the product title you tried, if relevant.
+    validations:
+      required: true
+  - type: dropdown
+    id: method
+    attributes:
+      label: Which method are you using?
+      options:
+        - Single Similarity (cosine matching)
+        - Top-K + GPT (FAISS)
+        - Both / not sure
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Merlin version or commit
+      description: The output of `pip show merlin`, or the commit hash if you run from a checkout.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Python version and operating system
+      placeholder: Python 3.12, Ubuntu 24.04
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or traceback
+      description: Remove any API keys before pasting.
+      render: shell
